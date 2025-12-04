@@ -1,0 +1,31 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">Request an Appointment</h4>
+        </div>
+        <div class="card-body p-4">
+          <%= form_with model: @appointment, local: true do |f| %>
+
+            <div class="mb-3">
+              <%= f.label :appointment_date, "Preferred Date & Time", class: "form-label fw-bold" %>
+              <%= f.datetime_field :appointment_date, class: "form-control", min: Time.now.strftime("%Y-%m-%dT%H:%M"), required: true %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :reason, "Reason for Visit", class: "form-label fw-bold" %>
+              <%= f.select :reason, ["Hearing Test", "Hearing Aid Fitting", "Device Adjustment", "Consultation"], {}, { class: "form-select" } %>
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+              <%= f.submit "Submit Request", class: "btn btn-success btn-lg" %>
+              <%= link_to "Cancel", appointments_path, class: "btn btn-outline-secondary" %>
+            </div>
+
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

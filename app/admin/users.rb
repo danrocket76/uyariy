@@ -1,4 +1,7 @@
 ActiveAdmin.register User do
+
+  menu if: proc { current_user.admin? || current_user.audiologist? }
+
   permit_params :email, :password, :password_confirmation, :role, :name
 
   # 1. The List View (Index)

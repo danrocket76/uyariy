@@ -1,0 +1,56 @@
+<div style="padding: 40px; font-family: sans-serif; background: white;">
+  <div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px;">
+    <h1>🦻 UYARIY CLINIC</h1>
+    <h3>Clinical Audiology Report</h3>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+    <div>
+      <strong>Patient:</strong> <%= @audiogram.user.name %><br>
+      <strong>Email:</strong> <%= @audiogram.user.email %>
+    </div>
+    <div style="text-align: right;">
+      <strong>Date:</strong> <%= @audiogram.created_at.strftime("%B %d, %Y") %><br>
+      <strong>Ref ID:</strong> #<%= @audiogram.id %>
+    </div>
+  </div>
+
+  <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+    <h2 style="margin-top: 0;">Diagnosis</h2>
+    <p style="font-size: 18px;"><%= @analysis[:diagnosis] %></p>
+
+    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+      <tr style="background: #eee;">
+        <th style="padding: 10px; border: 1px solid #ddd;">Ear</th>
+        <th style="padding: 10px; border: 1px solid #ddd;">PTA (Avg Loss)</th>
+        <th style="padding: 10px; border: 1px solid #ddd;">Severity</th>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ddd;">Left Ear</td>
+        <td style="padding: 10px; border: 1px solid #ddd;"><%= @analysis[:left_ear][:pta] %> dB</td>
+        <td style="padding: 10px; border: 1px solid #ddd;"><%= @analysis[:left_ear][:severity] %></td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ddd;">Right Ear</td>
+        <td style="padding: 10px; border: 1px solid #ddd;"><%= @analysis[:right_ear][:pta] %> dB</td>
+        <td style="padding: 10px; border: 1px solid #ddd;"><%= @analysis[:right_ear][:severity] %></td>
+      </tr>
+    </table>
+  </div>
+
+  <div style="margin-bottom: 30px;">
+    <h3>Clinical Observations</h3>
+    <div style="border: 1px solid #ddd; padding: 20px; height: 100px;">
+      <%= @audiogram.notes.presence || "No additional notes recorded." %>
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 50px;">
+    <p>__________________________</p>
+    <p><strong>Audiologist Signature</strong></p>
+  </div>
+
+  <script>
+      window.onload = function() { window.print(); }
+  </script>
+</div>

@@ -1,0 +1,34 @@
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">My Appointments</h2>
+    <%= link_to "Book Appointment", new_appointment_path, class: "btn btn-primary" %>
+  </div>
+
+  <% if @appointments.any? %>
+    <div class="list-group shadow-sm">
+      <% @appointments.each do |appt| %>
+        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3">
+          <div>
+            <h5 class="mb-1"><%= appt.reason %></h5>
+            <p class="mb-1 text-muted">
+              <i class="bi bi-calendar-event"></i>
+              <%= appt.appointment_date.strftime("%B %d, %Y at %I:%M %p") %>
+            </p>
+          </div>
+          <div>
+            <% case appt.status %>
+            <% when "pending" %>
+              <span class="badge bg-warning text-dark">Pending Approval</span>
+            <% when "confirmed" %>
+              <span class="badge bg-success">Confirmed</span>
+            <% when "cancelled" %>
+              <span class="badge bg-danger">Cancelled</span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="alert alert-info">You have no upcoming appointments.</div>
+  <% end %>
+</div>

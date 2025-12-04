@@ -5,11 +5,11 @@ class HearingAid < ApplicationRecord
   validates :stock, numericality: { greater_than_or_equal_to: 0 }
 
   def self.ransackable_attributes(auth_object = nil)
-    ["brand", "device_model", "price", "stock", "technical_specs", "created_at", "id"]
+    ["brand", "created_at", "device_model", "id", "price", "stock", "technical_specs", "updated_at", "max_gain"]
   end
 
   def self.ransackable_associations(auth_object = nil)
-    ["recommendations"]
+    ["order_items", "recommendations"]
   end
 
 end

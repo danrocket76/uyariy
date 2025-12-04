@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  hearing_aid: one
+  cart: one
+  quantity: 1
+
+two:
+  hearing_aid: two
+  cart: two
+  quantity: 1

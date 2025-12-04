@@ -1,7 +1,7 @@
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, 
+  devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 end
 class User < ApplicationRecord
@@ -14,6 +14,10 @@ class User < ApplicationRecord
 
   # 2. Associations
   has_many :recommendations, dependent: :destroy
+
+  has_many :audiograms, dependent: :destroy
+
+  has_many :appointments, dependent: :destroy
 
   # 3. Validations
   validates :name, presence: true
@@ -32,6 +36,6 @@ class User < ApplicationRecord
 
   # Allow Ransack to search across these relationships
   def self.ransackable_associations(auth_object = nil)
-    ["recommendations"]
+    ["audiograms", "appointments", "recommendations"]
   end
 end

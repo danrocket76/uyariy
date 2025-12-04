@@ -1,0 +1,306 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <%= link_to audiograms_path, class: "text-decoration-none text-muted small mb-1 d-block" do %>
+      <i class="bi bi-arrow-left me-1"></i> My History
+    <% end %>
+    <h2 class="fw-bold m-0">Your Hearing Analysis</h2>
+  </div>
+
+  <%= link_to "Start New Assessment", new_audiogram_path, class: "btn btn-outline-secondary" %>
+</div>
+
+  <div class="row">
+    <div class="col-lg-6">
+
+      <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Diagnosis Results</h5>
+        </div>
+        <div class="card-body">
+          <h4 class="card-title text-center mb-3 text-dark"><%= @analysis[:diagnosis] %></h4>
+
+          <table class="table table-sm table-bordered text-center align-middle">
+            <thead class="table-light">
+            <tr>
+              <th>Ear</th>
+              <th>Avg Loss (PTA)</th>
+              <th>Severity</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td class="text-primary fw-bold">Left Ear</td>
+              <td><%= @analysis[:left_ear][:pta] %> dB</td>
+              <td>
+                <% severity = @analysis[:left_ear][:severity] %>
+                <span class="badge <%= severity == 'Normal' ? 'bg-success' : 'bg-primary' %>">
+                  <%= severity %>
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td class="text-danger fw-bold">Right Ear</td>
+              <td><%= @analysis[:right_ear][:pta] %> dB</td>
+              <td>
+                <% severity = @analysis[:right_ear][:severity] %>
+                <span class="badge <%= severity == 'Normal' ? 'bg-success' : 'bg-danger' %>">
+                  <%= severity %>
+                </span>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+
+          <% if @analysis[:diagnosis].include?("High frequency") %>
+            <div class="alert alert-warning d-flex align-items-center mt-2" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              <div><strong>Note:</strong> High frequency loss detected. Consult a specialist.</div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="card shadow mb-4">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+          <h6 class="mb-0 text-muted">Visual Audiogram</h6>
+          <small class="text-muted" style="font-size: 0.8em;">Blue X = Left | Red O = Right</small>
+        </div>
+        <div class="card-body bg-white">
+          <canvas id="audiogramChart" height="250"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="col-lg-6">
+
+      <%
+        # --- LOGIC GATES ---
+        is_normal_left = @analysis[:left_ear][:severity] == "Normal"
+        is_normal_right = @analysis[:right_ear][:severity] == "Normal"
+        max_loss = [@analysis[:left_ear][:max_loss], @analysis[:right_ear][:max_loss]].max
+
+        # Find the specific recommendation linked to THIS audiogram
+        validation = @audiogram.recommendations.first
+      %>
+
+      <div class="card shadow h-100">
+
+        <div class="card-header <%= validation&.cochlear? ? 'bg-info' : 'bg-success' %> text-white">
+          <h5 class="mb-0">
+            <%= validation&.cochlear? ? "Clinical Recommendation" : "Recommended Hearing Aids" %>
+          </h5>
+        </div>
+
+        <div class="card-body">
+
+          <% if is_normal_left && is_normal_right %>
+            <div class="text-center p-4">
+              <div style="font-size: 4rem;">🎉👂</div>
+              <h3 class="text-success fw-bold mt-3">Your hearing is perfect!</h3>
+              <p class="lead text-muted mt-2">You lucky m*therf*cker! You don't need hearing aids.</p>
+              <p class="small text-muted">Go enjoy some music (but not too loud, or you'll end up back here!).</p>
+              <img src="https://media.giphy.com/media/l41lUjUgLLwWrz20w/giphy.gif" alt="Happy Dance" class="img-fluid rounded shadow mt-3" style="max-height: 200px;">
+            </div>
+
+          <% elsif validation&.cochlear? %>
+
+            <div class="text-center p-4">
+              <div class="mb-4">
+                <i class="bi bi-heart-pulse-fill text-info" style="font-size: 4rem;"></i>
+              </div>
+
+              <h3 class="fw-bold text-dark mb-3">A Personalized Care Path</h3>
+
+              <p class="text-muted" style="line-height: 1.6;">
+                Based on your profound hearing profile, standard hearing aids may not provide the clarity you deserve.
+                Your hearing health is our priority, and we believe you would benefit most from a
+                <strong>specialized medical consultation</strong> or a <strong>Cochlear Implant</strong> evaluation.
+              </p>
+
+              <% if validation.audiologist_notes.present? %>
+                <div class="alert alert-info border-0 bg-info-subtle text-start mt-4 p-3 rounded">
+                  <strong>👨‍⚕️ Audiologist Note:</strong><br>
+                  "<%= validation.audiologist_notes %>"
+                </div>
+              <% end %>
+
+              <div class="mt-4">
+                <button class="btn btn-info text-white btn-lg w-100 shadow-sm">
+                  Find a Specialist Near Me
+                </button>
+                <small class="d-block mt-2 text-muted">We are here to support you on this journey.</small>
+              </div>
+            </div>
+
+          <% else %>
+
+            <% if validation&.validated_at %>
+              <div class="alert alert-success d-flex align-items-center mb-4 border-success border-2">
+                <div style="font-size: 1.5rem;" class="me-3">✅</div>
+                <div>
+                  <h6 class="alert-heading fw-bold mb-0">Validated by Audiologist</h6>
+                  <small>Your results have been reviewed and approved.</small>
+                </div>
+              </div>
+            <% else %>
+              <div class="alert alert-warning d-flex align-items-center mb-4">
+                <div style="font-size: 1.5rem;" class="me-3">⏳</div>
+                <div>
+                  <h6 class="alert-heading fw-bold mb-0">Clinical Review Pending</h6>
+                  <small>An audiologist will review your results within 24 hours.</small>
+                </div>
+              </div>
+            <% end %>
+
+            <% if @math_recommendations.any? %>
+              <div class="list-group list-group-flush">
+                <% @math_recommendations.each do |aid| %>
+
+                  <%
+                    rec_for_this_device = @clinical_recommendations.find { |r| r.hearing_aid_id == aid.id && r.audiogram_id == @audiogram.id }
+                    is_validated = rec_for_this_device&.validated_at.present?
+                    is_purchased = rec_for_this_device&.purchased?
+                  %>
+
+                  <div class="list-group-item list-group-item-action flex-column align-items-start p-3 border-bottom <%= 'bg-success-subtle border-success border-2 shadow-sm' if is_validated || is_purchased %>">
+
+                    <div class="d-flex w-100 justify-content-between">
+                      <h5 class="mb-1 fw-bold text-dark">
+                        <%= aid.brand %> - <%= aid.device_model %>
+
+                        <% if is_purchased %>
+                          <span class="badge bg-primary ms-2"><i class="bi bi-bag-check-fill me-1"></i>Purchased</span>
+                        <% elsif is_validated %>
+                          <span class="badge bg-success ms-2"><i class="bi bi-patch-check-fill me-1"></i>Doctor's Choice</span>
+                        <% end %>
+                      </h5>
+
+                      <% unless is_purchased %>
+                        <span class="badge bg-dark rounded-pill"><%= number_to_currency(aid.price) %></span>
+                      <% end %>
+                    </div>
+
+                    <% if is_validated && rec_for_this_device.audiologist_notes.present? %>
+                      <div class="alert alert-success py-2 px-3 mt-2 mb-2 fst-italic border-0">
+                        <strong>👨‍⚕️ Audiologist Note:</strong> "<%= rec_for_this_device.audiologist_notes %>"
+                      </div>
+                    <% end %>
+
+                    <p class="mb-2 text-secondary small"><%= aid.technical_specs.truncate(80) %></p>
+
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                      <small class="text-muted">Max Gain: <%= aid.max_gain %> dB</small>
+
+                      <% if aid.stock > 0 %>
+                        <small class="text-success fw-bold">In Stock</small>
+                      <% else %>
+                        <small class="text-danger fw-bold">Out of Stock</small>
+                      <% end %>
+                    </div>
+
+                    <% if is_purchased %>
+                      <button class="btn btn-sm btn-primary mt-3 w-100" disabled>
+                        <i class="bi bi-check2"></i> Owned
+                      </button>
+                    <% else %>
+                      <%= link_to "View Details", hearing_aid_path(aid), class: "btn btn-sm #{is_validated ? 'btn-success' : 'btn-outline-dark'} mt-3 w-100" %>
+                    <% end %>
+
+                  </div>
+                <% end %>
+              </div>
+            <% else %>
+              <div class="text-center p-5 bg-light rounded">
+                <h5 class="text-muted">No specific matches found.</h5>
+                <p class="mb-0">Please book an appointment for a custom order.</p>
+              </div>
+            <% end %>
+
+          <% end %> </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener("turbo:load", function() {
+        const ctx = document.getElementById('audiogramChart');
+
+        if (ctx) {
+            // Data Injection from Rails
+            const leftData = [
+                <%= @audiogram.thresholds.dig("left", "125") || 0 %>,
+                <%= @audiogram.thresholds.dig("left", "250") || 0 %>,
+                <%= @audiogram.thresholds.dig("left", "500") || 0 %>,
+                <%= @audiogram.thresholds.dig("left", "1000") || 0 %>,
+                <%= @audiogram.thresholds.dig("left", "2000") || 0 %>,
+                <%= @audiogram.thresholds.dig("left", "4000") || 0 %>,
+                <%= @audiogram.thresholds.dig("left", "8000") || 0 %>
+            ];
+
+            const rightData = [
+                <%= @audiogram.thresholds.dig("right", "125") || 0 %>,
+                <%= @audiogram.thresholds.dig("right", "250") || 0 %>,
+                <%= @audiogram.thresholds.dig("right", "500") || 0 %>,
+                <%= @audiogram.thresholds.dig("right", "1000") || 0 %>,
+                <%= @audiogram.thresholds.dig("right", "2000") || 0 %>,
+                <%= @audiogram.thresholds.dig("right", "4000") || 0 %>,
+                <%= @audiogram.thresholds.dig("right", "8000") || 0 %>
+            ];
+
+            // Avoid duplication bug
+            if (Chart.getChart("audiogramChart")) {
+                Chart.getChart("audiogramChart").destroy();
+            }
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['125', '250', '500', '1k', '2k', '4k', '8k'],
+                    datasets: [
+                        {
+                            label: 'Right Ear (Red O)',
+                            data: rightData,
+                            borderColor: '#dc3545',
+                            backgroundColor: '#dc3545',
+                            pointStyle: 'circle',
+                            pointRadius: 6,
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.1
+                        },
+                        {
+                            label: 'Left Ear (Blue X)',
+                            data: leftData,
+                            borderColor: '#0d6efd',
+                            backgroundColor: '#0d6efd',
+                            pointStyle: 'crossRot',
+                            pointRadius: 6,
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            reverse: true, // Medical Standard
+                            min: -10,
+                            max: 120,
+                            title: {
+                                display: true,
+                                text: 'Hearing Level (dB)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>

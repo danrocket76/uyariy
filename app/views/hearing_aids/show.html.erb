@@ -1,0 +1,132 @@
+<div class="container mt-4 mb-5">
+
+  <div class="mb-3">
+    <%= link_to hearing_aids_path, class: "text-decoration-none text-muted fw-bold" do %>
+      <i class="bi bi-arrow-left me-1"></i> Back to Store
+    <% end %>
+  </div>
+
+  <div class="row">
+
+    <div class="col-lg-8 pe-lg-5">
+      <div class="card border-0 shadow-sm p-3 mb-4">
+        <% if @hearing_aid.image_url.present? %>
+          <%= image_tag @hearing_aid.image_url, class: "img-fluid rounded", style: "object-fit: contain; max-height: 450px; width: 100%;" %>
+        <% else %>
+          <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 350px;">
+            <div class="text-center text-muted">
+              <i class="bi bi-ear" style="font-size: 4rem;"></i>
+              <p>No Image Available</p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="mb-5">
+        <h5 class="fw-bold border-bottom pb-2 mb-3">Product Overview</h5>
+        <div class="text-secondary" style="font-size: 1rem; line-height: 1.7; text-align: justify; ">
+          <%= simple_format @hearing_aid.technical_specs %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="sticky-top" style="top: 20px; z-index: 1;">
+
+        <small class="text-uppercase text-muted fw-bold mb-1 d-block"><%= @hearing_aid.brand %></small>
+        <h2 class="fw-bold mb-2"><%= @hearing_aid.device_model %></h2>
+
+        <div class="d-flex align-items-center mb-3">
+          <span class="h3 fw-bold text-success mb-0"><%= number_to_currency(@hearing_aid.price) %></span>
+          <% if @hearing_aid.stock > 0 %>
+            <span class="badge bg-success ms-3">In Stock</span>
+          <% else %>
+            <span class="badge bg-danger ms-3">Out of Stock</span>
+          <% end %>
+        </div>
+
+        <hr class="text-muted opacity-25 my-4">
+
+        <div class="mb-4">
+          <h6 class="fw-bold mb-3 text-uppercase small text-muted">Technical Specs</h6>
+          <div class="row g-2">
+            <div class="col-6">
+              <div class="border rounded p-2 text-center bg-white">
+                <i class="bi bi-soundwave fs-5 text-primary d-block mb-1"></i>
+                <small class="text-muted d-block" style="font-size: 0.75rem;">Max Gain</small>
+                <strong><%= @hearing_aid.max_gain %> dB</strong>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="border rounded p-2 text-center bg-white">
+                <i class="bi bi-battery-charging fs-5 text-warning d-block mb-1"></i>
+                <small class="text-muted d-block" style="font-size: 0.75rem;">Battery</small>
+                <strong><%= @hearing_aid.battery_type %></strong>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="border rounded p-2 text-center bg-white">
+                <i class="bi bi-bluetooth fs-5 text-info d-block mb-1"></i>
+                <small class="text-muted d-block" style="font-size: 0.75rem;">Bluetooth</small>
+                <strong><%= @hearing_aid.bluetooth ? "Yes" : "No" %></strong>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="border rounded p-2 text-center bg-white">
+                <i class="bi bi-shield-check fs-5 text-success d-block mb-1"></i>
+                <small class="text-muted d-block" style="font-size: 0.75rem;">Warranty</small>
+                <strong><%= @hearing_aid.warranty %></strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <% if @hearing_aid.features.present? %>
+          <div class="mb-4">
+            <h6 class="fw-bold mb-3 text-uppercase small text-muted">Key Features</h6>
+            <ul class="list-unstyled small">
+              <% @hearing_aid.features.split("\n").each do |feature| %>
+                <li class="mb-2 d-flex align-items-start text-secondary">
+                  <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                  <span><%= feature %></span>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="mt-4 pt-3 border-top">
+          <div class="d-grid">
+
+            <%
+              # Check if User already bought this
+              already_bought = Recommendation.where(user: current_user, hearing_aid: @hearing_aid, status: :purchased).exists?
+            %>
+
+            <% if already_bought %>
+              <button class="btn btn-success btn-lg shadow-sm" disabled>
+                <i class="bi bi-check-circle-fill me-2"></i> Purchased
+              </button>
+              <div class="text-center mt-2 text-success small">
+                You own this device.
+              </div>
+
+            <% else %>
+              <%= button_to order_items_path(hearing_aid_id: @hearing_aid.id), class: "btn btn-dark btn-lg shadow-sm", disabled: @hearing_aid.stock <= 0 do %>
+                <i class="bi bi-cart-plus me-2"></i> Add to Cart
+              <% end %>
+
+              <div class="text-center mt-2">
+                <small class="text-muted" style="font-size: 0.85rem;">
+                  <i class="bi bi-shield-lock-fill text-success me-1"></i> Secure Checkout via Stripe
+                </small>
+              </div>
+            <% end %>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

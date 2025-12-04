@@ -1,0 +1,91 @@
+<!-- HERO SECTION -->
+<div class="position-relative text-center text-white mb-5" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('<%= asset_path("hero-bg.jpg") %>'); background-size: cover; background-position: center; height: 85vh; border-radius: 0 0 50px 50px; margin-top: -25px;">
+  <div class="d-flex flex-column justify-content-center align-items-center h-100 container">
+    <span class="badge bg-warning text-dark mb-3 px-3 py-2 rounded-pill fw-bold text-uppercase tracking-wider">Premium Audiology</span>
+    <h1 class="display-3 fw-bold mb-3">Rediscover the Joy of Hearing</h1>
+    <p class="lead mb-5 w-75 mx-auto" style="opacity: 0.9;">
+      Clinical-grade hearing assessments and premium devices, delivered directly to your door.
+      Validated by certified audiologists.
+    </p>
+
+    <div class="d-flex gap-3">
+      <% if user_signed_in? %>
+        <%= link_to "Go to My Dashboard", audiograms_path, class: "btn btn-primary btn-lg px-5 py-3 rounded-pill fw-bold shadow" %>
+      <% else %>
+        <%= link_to "Take Free Hearing Test", new_user_session_path, class: "btn btn-primary btn-lg px-5 py-3 rounded-pill fw-bold shadow" %>
+        <%= link_to "Shop Hearing Aids", hearing_aids_path, class: "btn btn-outline-light btn-lg px-5 py-3 rounded-pill fw-bold backdrop-blur" %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES SECTION -->
+<div class="container mb-5 py-5">
+  <div class="row g-4 text-center">
+    <div class="col-md-4">
+      <div class="p-4 h-100 border rounded-4 shadow-sm hover-lift bg-white">
+        <i class="bi bi-soundwave text-primary" style="font-size: 3rem;"></i>
+        <h3 class="fw-bold mt-3">Smart Analysis</h3>
+        <p class="text-muted">Our AI-powered engine analyzes your audiogram (image or manual) to calculate your exact hearing loss profile.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="p-4 h-100 border rounded-4 shadow-sm hover-lift bg-white">
+        <i class="bi bi-person-check-fill text-success" style="font-size: 3rem;"></i>
+        <h3 class="fw-bold mt-3">Doctor Validated</h3>
+        <p class="text-muted">Every recommendation is reviewed by a certified audiologist before you buy. Safety first.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="p-4 h-100 border rounded-4 shadow-sm hover-lift bg-white">
+        <i class="bi bi-truck text-warning" style="font-size: 3rem;"></i>
+        <h3 class="fw-bold mt-3">Direct Delivery</h3>
+        <p class="text-muted">Skip the clinic waiting room. Get premium devices configured for you and shipped to your home.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT SHOWCASE -->
+<div class="container mb-5">
+  <div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+      <h6 class="text-uppercase text-muted fw-bold mb-1">Our Collection</h6>
+      <h2 class="fw-bold">Premium Hearing Aids</h2>
+    </div>
+    <%= link_to "View All Products →", hearing_aids_path, class: "text-decoration-none fw-bold" %>
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    <% @featured_products.each do |aid| %>
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
+            <% if aid.image_url.present? %>
+              <%= image_tag aid.image_url, class: "img-fluid", style: "max-height: 80%; max-width: 80%; object-fit: contain;" %>
+            <% else %>
+              <i class="bi bi-ear text-muted" style="font-size: 3rem;"></i>
+            <% end %>
+          </div>
+          <div class="card-body">
+            <h5 class="fw-bold"><%= aid.device_model %></h5>
+            <p class="text-muted small mb-2"><%= aid.brand %></p>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <span class="h5 mb-0 text-dark"><%= number_to_currency(aid.price) %></span>
+              <%= link_to "Details", hearing_aid_path(aid), class: "btn btn-sm btn-outline-dark rounded-pill px-3" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- CTA SECTION -->
+<div class="container mb-5">
+  <div class="bg-dark text-white rounded-4 p-5 text-center">
+    <h2 class="fw-bold mb-3">Ready to hear the world clearly?</h2>
+    <p class="lead mb-4 text-white-50">Join thousands of happy patients today.</p>
+    <%= link_to "Start Your Assessment", new_audiogram_path, class: "btn btn-warning btn-lg px-5 py-3 rounded-pill fw-bold text-dark" %>
+  </div>
+</div>

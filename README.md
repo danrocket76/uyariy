@@ -1,112 +1,107 @@
-# 🦻 UYARIY - Sistema de Gestión Audiológica (Admin Panel)
+# UYARIY - Intelligent Audiology & E-Commerce Platform
 
-Este proyecto es una plataforma administrativa construida con **Ruby on Rails**, diseñada para gestionar el flujo operativo de un centro audiológico ("UYARIY").
+**Uyariy** is a vertically integrated MVC web application designed to modernize the hearing health industry. It bridges the gap between clinical assessment and e-commerce, offering a secure platform where patients can analyze their hearing, receive medically validated recommendations, and purchase devices directly.
 
-El sistema centraliza la gestión de pacientes, audiólogos, inventario de audífonos y recomendaciones médicas mediante un panel de administración intuitivo y seguro.
-
-## 🚀 Tecnologías Principales
-
-* **Core:** Ruby 3.4 + Rails 8.1.1
-* **Base de Datos:** PostgreSQL
-* **Interfaz Administrativa:** ActiveAdmin
-* **Autenticación:** Devise
-* **Autorización (Seguridad):** CanCanCan
-* **Búsqueda y Filtros:** Ransack
-* **Estilos:** SassC
+Built with **Ruby on Rails 8.1.1**, it leverages **Artificial Intelligence (OpenAI)** for diagnostic data extraction and **Stripe** for secure financial transactions.
 
 ---
 
-## 📊 Características del Panel
+## 🔄 The Ecosystem Flow (Connected Logic)
 
-### 1. Dashboard (Tablero de Control)
-Esto permite tener una vista centralizada para la toma de decisiones rápidas.
-* **Métricas en tiempo real:** Contadores de pacientes, audiólogos y stock total.
-* **Actividad Reciente:** Tabla con las últimas recomendaciones generadas para supervisión inmediata.
-* **Alertas de Inventario:** Visualización del valor total del inventario (Precio * Stock).
-
-### 2. Gestión de Inventario (Audífonos)
-CRUD completo para el catálogo de productos.
-* Campos detallados: Marca, Modelo, Precio, Especificaciones Técnicas y Stock.
-* Validaciones de precio y formato de moneda.
-
-### 3. Sistema de Recomendaciones
-Esto permite supervisar las recomendaciones generadas por el sistema. Vincula a un **Paciente** con un **Audífono** específico.
-* Estados de gestión: *Pendiente, Aprobado, Rechazado, Comprado*.
-* Notas clínicas adjuntas a cada recomendación.
-
----
-
-## 🔐 Arquitectura de Seguridad y Roles (RBAC)
-
-La seguridad es la prioridad número uno de este sistema por eso utilizamos una estrategia de **Control de Acceso Basado en Roles (RBAC)** dividida en dos capas de protección: Autenticación (¿Quién eres?) y Autorización (¿Qué puedes hacer?).
+This diagram illustrates the lifecycle of a patient's journey and how it interacts with the clinical and business sides of the platform.
 
 
+## 💻 Technology Stack
 
+### Core Framework
 
+* **Ruby:** 3.4.0
+* **Framework:** Rails 8.1.1
+* **Database:** PostgreSQL (Production & Development)
+* **Frontend:** Bootstrap 5 (CDN), Turbo Drive, StimulusJS
+* **Visualization:** Chart.js (Medical-grade visualization with reversed Y-Axis for audiometry)
 
-### 👮‍♂️ Capa 1: El "Cadenero" (Authentication)
-Gestionada por **Devise** y un controlador personalizado.
-* El sistema verifica si el usuario está logueado.
-* **Regla estricta:** Si un usuario con rol de `Patient` (Paciente) intenta acceder a `/admin`, el sistema lo **desconecta automáticamente (Sign Out)** y lo redirige al login. El panel es exclusivo para el personal interno.
+### Integration & APIs
 
-### 🛡️ Capa 2: El "Guardia" (Authorization)
-Gestionada por **CanCanCan**. Una vez dentro del panel, el sistema define qué botones y datos puede ver cada usuario según su nivel:
+* **OpenAI (GPT-4o):**
+    * **Computer Vision:** Analyzes uploaded audiogram charts to extract frequency/decibel data points (Red O / Blue X).
+    * **Text Generation:** Auto-fills technical specifications for new products in the Admin Panel.
+* **Stripe API:** Hosted Checkout sessions for secure credit card processing.
+* **ActiveAdmin:** The backbone of the Staff/Clinic interface.
 
-| Rol | Permisos | Descripción |
+Key Gems
+
+* devise: Authentication.
+* cancancan: Role-Based Access Control (RBAC).
+* ruby-openai: AI Client.
+* stripe: Payments.
+* ransack: Advanced search filters.
+* kaminari: Pagination.
+
+## 🔐 Roles & Permissions (RBAC)
+
+The system enforces strict security boundaries. A user cannot access views outside their role.
+
+| Role | Access Level | Responsibilities |
 | :--- | :--- | :--- |
-| 🔴 **Super Admin** | `can :manage, :all` | Acceso total. Puede crear, editar y borrar cualquier registro (Usuarios, Inventario, etc.). |
-| 🟠 **Audiólogo** | `can :read, :all` | Acceso de solo lectura. Puede ver estadísticas, pacientes e inventario, pero **NO** tiene botones de editar ni eliminar. |
-| 🟢 **Paciente** | `banned` | Acceso denegado al panel administrativo. |
+| **Patient** | **Core Access** | Can take hearing tests, view personal history, shop in the store, request appointments. **Banned** from Admin Panel. |
+| **Audiologist** | **Clinical Access** | Access to `Admin/Audiograms` and `Admin/Appointments`. Can validate recommendations, adjust devices, and print clinical reports. **Restricted** from Financial Dashboard. |
+| **Super Admin** | **Business Access** | Access to `Admin/Dashboard` (Revenue, Inventory, Users). Can manage products using AI Auto-Fill. **Restricted** from patient medical data creation. |
 
 ---
 
-## 🛠️ Instalación y Configuración Local
 
-Sigue estos pasos para levantar el proyecto en tu máquina:
+## 🛒 Features Breakdown
 
-1.  **Clonar el repositorio:**
-    ```bash
-    git clone <url-del-repo>
-    cd hastoreadmin
-    ```
+### 1. The Core (Diagnosis)
+* **Inputs:** Accepts standard clinical frequencies (125Hz - 8000Hz).
+* **Analysis Logic:** Calculates Pure Tone Average (PTA) and determines severity (Normal vs. Profound).
+* **Logic Gate:**
+    * **Normal Hearing:** Hides the store and displays a celebration message.
+    * **Profound Loss:** Hides standard products and advises a Cochlear Implant specialist referral.
 
-2.  **Instalar dependencias:**
-    ```bash
-    bundle install
-    ```
+### 2. The Store
+* Smart Filtering: Patients only see products powerful enough for their specific max decibel loss.
+* Prevention: Logic prevents purchasing the same device twice ("Owned" state).
+* Catalog: A public-facing store for browsing before login.
 
-3.  **Configurar la Base de Datos:**
-    ```bash
-    bin/rails db:create
-    bin/rails db:migrate
-    bin/rails db:seed  # (Opcional: carga datos de prueba)
-    ```
+### 3. The Clinic (Admin Panel)
+* **Validation Workflow:** Audiologists see "Pending" system matches. They can accept them, adjust the device model, or write clinical notes.
+* **AI Auto-Fill:** Admins adding new products can click "✨ Auto-Fill" to have GPT-4o populate technical specs and battery info automatically.
 
-4.  **Iniciar el Servidor:**
-    ```bash
-    bin/rails server
-    ```
+## ⚙️ Local Setup & Installation
 
-5.  **Acceso:**
-    Abre tu navegador en `http://localhost:3000`. Serás redirigido automáticamente al login del admin.
+If you wish to replicate this project locally:
 
----
-
-## 👤 Credenciales por Defecto (Desarrollo)
-
-Para ingresar por primera vez:
-
-* **Usuario:** `admin@example.com`
-* **Contraseña:** `password`
-
-> **Nota:** Asegúrate de cambiar estas credenciales o crear un nuevo administrador en producción.
-
----
-
-## 🐛 Solución de Problemas Comunes
-
-**Error: "Ransack needs attributes explicitly allowlisted"**
-Si ves este error, es porque Ransack (el buscador) requiere permisos explícitos en Rails 8. Revisa que tus modelos (`User.rb`, `HearingAid.rb`) tengan definido el método `self.ransackable_attributes`.
-
-**Ciclo de Redireccionamiento (Redirect Loop)**
-Si no puedes salir del login, borra las cookies de `localhost` o intenta en modo incógnito. Esto sucede si un usuario sin permisos intenta entrar y el sistema intenta redirigirlo infinitamente.
+**1. Clone the repository**
+```bash
+git clone https://github.com/YOUR_USER/uyariy.git
+```
+**2. Install Dependencies**
+```bash
+bundle install
+```
+**3. Database Setup**
+```bash
+bin/rails db:create
+bin/rails db:migrate
+# Note: Seeds create the Super Admin only. Products must be added via Admin Panel.
+bin/rails db:seed
+```
+**4. Set Environment Credentials** This project requires API Keys. Use the Rails credentials vault:
+```bash
+EDITOR="nano" bin/rails credentials:edit
+```
+#### Add your keys structure inside the editor:
+```yaml
+openai:
+  access_token: sk-YOUR-OPENAI-KEY
+stripe:
+  publishable_key: pk_test_YOUR_STRIPE_PK
+  secret_key: sk_test_YOUR_STRIPE_SK
+```
+**5. Run the Server**
+```bash
+bin/rails server
+```
+#### Visit http://localhost:3000.

@@ -1,0 +1,48 @@
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh; background-color: #f8f9fa;">
+  <div class="card shadow-sm border-0 p-4" style="width: 100%; max-width: 450px; border-radius: 12px;">
+
+    <div class="card-body text-center">
+      <h2 class="fw-bold mb-1" style="color: #2c3e50;">🦻 UYARIY</h2>
+      <p class="text-muted small mb-4">CREATE ACCOUNT</p>
+
+      <h3 class="text-start fw-bold mb-2">Sign up</h3>
+      <p class="text-start text-muted mb-4">Join us to manage your hearing health</p>
+
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
+
+        <div class="form-floating mb-3">
+          <%= f.text_field :name, autofocus: true, class: "form-control", id: "floatingName", placeholder: "John Doe", required: true %>
+          <label for="floatingName">Full Name</label>
+        </div>
+
+        <div class="form-floating mb-3">
+          <%= f.email_field :email, autocomplete: "email", class: "form-control", id: "floatingInput", placeholder: "name@example.com", required: true %>
+          <label for="floatingInput">Email address</label>
+        </div>
+
+        <div class="form-floating mb-3">
+          <%= f.password_field :password, autocomplete: "new-password", class: "form-control", id: "floatingPassword", placeholder: "Password", required: true %>
+          <label for="floatingPassword">Password <% if @minimum_password_length %>(<%= @minimum_password_length %> chars min)<% end %></label>
+        </div>
+
+        <div class="form-floating mb-4">
+          <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control", id: "floatingConfirm", placeholder: "Confirm Password", required: true %>
+          <label for="floatingConfirm">Confirm Password</label>
+        </div>
+
+        <div class="d-grid gap-2">
+          <%= f.submit "Create Account", class: "btn btn-primary btn-lg", style: "background-color: #4a47a3; border: none;" %>
+        </div>
+      <% end %>
+
+      <div class="mt-4 pt-3 border-top">
+        <p class="text-muted small">
+          Already have an account?
+          <%= link_to "Log in", new_session_path(resource_name), class: "text-decoration-none fw-bold", style: "color: #e91e63;", data: { turbo: false } %>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>

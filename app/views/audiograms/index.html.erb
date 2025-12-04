@@ -1,0 +1,52 @@
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">My Hearing History</h2>
+    <%= link_to new_audiogram_path, class: "btn btn-primary" do %>
+      <i class="bi bi-plus-lg"></i> New Assessment
+    <% end %>
+  </div>
+
+  <% if @audiograms.any? %>
+    <div class="row">
+      <% @audiograms.each do |audio| %>
+        <div class="col-md-4 mb-4">
+          <div class="card shadow-sm h-100">
+            <div class="card-body">
+              <h5 class="card-title text-muted" style="font-size: 1rem;">
+                <i class="bi bi-calendar-event me-2"></i>
+                Assessment Created: <%= audio.created_at.strftime("%B %d, %Y") %>
+              </h5>
+
+              <p class="card-text mt-3">
+                <strong>Source:</strong>
+                <% if audio.image_file.present? %>
+                  <span class="badge bg-info text-dark">
+                    <i class="bi bi-file-earmark-image me-1"></i> AI Image
+                  </span>
+                <% else %>
+                  <span class="badge bg-secondary">
+                    <i class="bi bi-keyboard me-1"></i> Manual Input
+                  </span>
+                <% end %>
+              </p>
+
+              <p class="small text-muted">
+                Captured <%= audio.thresholds&.dig("left", "500") ? "Complete Data" : "Partial Data" %>
+              </p>
+
+              <%= link_to "View Results", audiogram_path(audio), class: "btn btn-outline-primary w-100 mt-2" %>
+
+              <%= button_to "Delete", audiogram_path(audio), method: :delete, class: "btn btn-outline-danger w-100 mt-2", form: { data: { turbo_confirm: "Are you sure?" } } %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center p-5 bg-light rounded">
+      <h3>No assessments found</h3>
+      <p class="text-muted">Take your first hearing test today.</p>
+      <%= link_to "Start Assessment", new_audiogram_path, class: "btn btn-success btn-lg mt-3" %>
+    </div>
+  <% end %>
+</div>

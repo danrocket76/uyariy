@@ -1,6 +1,6 @@
 # db/seeds.rb
 
-puts "Seeding database..."
+#puts "Seeding database..."
 
 # Create the Super Admin if they don't exist
 admin = User.find_or_initialize_by(email: 'admin@example.com')
@@ -12,4 +12,5 @@ admin.assign_attributes(
 )
 admin.save!
 
-puts "Admin user created/updated successfully!"
+puts "✅ Admin user ready: admin@example.com"
+puts "🧹 Database is clean. Please add real products via the Admin Panel."

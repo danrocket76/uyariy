@@ -10,6 +10,7 @@ Built with **Ruby on Rails 8.1.1**, it leverages **Artificial Intelligence (Open
 
 This diagram illustrates the lifecycle of a patient's journey and how it interacts with the clinical and business sides of the platform.
 
+![](app/assets/images/mermaid-diagram-2025-12-04-151848.png)
 
 ## 💻 Technology Stack
 

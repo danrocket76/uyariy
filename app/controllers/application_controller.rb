@@ -13,7 +13,7 @@ class ApplicationController < ActionController::Base
     unless current_user.admin? || current_user.audiologist?
       flash[:alert] = "You are not authorized to access this area."
       sign_out current_user
-      redirect_to new_user_session_path # Send back to login
+      redirect_to new_user_session_path # Send back to Login
     end
   end
 

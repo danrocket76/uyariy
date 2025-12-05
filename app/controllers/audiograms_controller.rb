@@ -3,7 +3,6 @@ class AudiogramsController < ApplicationController
   before_action :authenticate_patient!
 
   def index
-    # History: Newest first
     @audiograms = current_user.audiograms.order(created_at: :desc)
   end
 
@@ -11,13 +10,11 @@ class AudiogramsController < ApplicationController
     @audiogram = Audiogram.find(params[:id])
     @analysis = AudiogramAnalyzer.new(@audiogram).run
 
-    # 1. Math: Find all devices powerful enough for the loss
-    # (We use this to show the list of "Potential Matches")
+    # 1. Math: Find all devices that can be a potential match and powerful enough for the loss
     max_loss_val = [@analysis[:left_ear][:max_loss], @analysis[:right_ear][:max_loss]].max
     @math_recommendations = HearingAid.where("max_gain >= ?", max_loss_val)
 
     # 2. Clinical: Find actual DB records created/validated by the system or doctor
-    # (We use this to check for badges, notes, and validation status)
     @clinical_recommendations = Recommendation.where(user: current_user, hearing_aid: @math_recommendations)
   end
 
@@ -26,7 +23,7 @@ class AudiogramsController < ApplicationController
   end
 
   def create
-    # === BRANCH 1: IMAGE UPLOAD ===
+    # === IMAGE UPLOAD ===
     if params[:audiogram][:image_file].present?
       uploaded_file = params[:audiogram][:image_file]
       @audiogram = current_user.audiograms.build(notes: "Imported via AI Analysis")
@@ -39,7 +36,7 @@ class AudiogramsController < ApplicationController
       if extracted_data
         @audiogram.thresholds = extracted_data
         if @audiogram.save
-          auto_generate_recommendation(@audiogram) # <--- NEW LOGIC
+          auto_generate_recommendation(@audiogram)
           redirect_to @audiogram, notice: 'AI Analysis complete! Recommendation drafted.', status: :see_other
         else
           flash.now[:alert] = "Error saving AI data."
@@ -50,7 +47,7 @@ class AudiogramsController < ApplicationController
         render :new, status: :unprocessable_entity
       end
 
-      # === BRANCH 2: MANUAL INPUT ===
+      # MANUAL INPUT
     else
       thresholds = {
         left: params[:audiogram][:left_ear],
@@ -60,7 +57,7 @@ class AudiogramsController < ApplicationController
       @audiogram = current_user.audiograms.build(thresholds: thresholds)
 
       if @audiogram.save
-        auto_generate_recommendation(@audiogram) # <--- NEW LOGIC
+        auto_generate_recommendation(@audiogram)
         redirect_to @audiogram, notice: 'Manual audiogram saved! Recommendation drafted.', status: :see_other
       else
         render :new, status: :unprocessable_entity
@@ -76,21 +73,20 @@ class AudiogramsController < ApplicationController
 
   private
 
-  # --- THE NEW LOGIC TO CREATE A DRAFT FOR THE AUDIOLOGIST ---
+  # CREATES A DRAFT OF THE RECOMMENDATION FOR THE AUDIOLOGIST
   def auto_generate_recommendation(audiogram)
-    # 1. Analyze the new data
+
     analysis = AudiogramAnalyzer.new(audiogram).run
     max_loss = [analysis[:left_ear][:max_loss], analysis[:right_ear][:max_loss]].max
 
-    # 2. Skip if hearing is normal (No need to waste doctor's time)
+    # It will skip if the hearing is normal (We don't need to waste doctor's time)
     return if max_loss < 25
 
-    # 3. Find the "Best Fit" (Highest price/quality that covers the loss)
-    # This creates the "Default" suggestion the doctor will see
+    # Find the "Best Fit" (Highest price/quality that covers the loss) and also the default suggestion the doctor will see
     best_match = HearingAid.where("max_gain >= ?", max_loss).order(price: :desc).first
 
     if best_match
-      # 4. Create the PENDING record
+      # Create the PENDING record
       Recommendation.create!(
         user: current_user,
         audiogram_id: audiogram.id,

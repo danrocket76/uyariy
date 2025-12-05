@@ -3,12 +3,11 @@ ActiveAdmin.register_page "Dashboard" do
 
   content title: proc { I18n.t("active_admin.dashboard") } do
 
-    # --- ROW 1: THE BIG STATS ---
+    # --- HERE WE PUT THE BIG STATS ---
     columns do
       column do
         panel "Total Revenue" do
           div class: "kpi-container" do
-            # Calculate Revenue
             total = Order.sum(:total_amount)
             div number_to_currency(total), class: "kpi-value text-green"
             div "Lifetime Sales", class: "kpi-label"
@@ -36,7 +35,7 @@ ActiveAdmin.register_page "Dashboard" do
       end
     end
 
-    # --- ROW 2: STORE DATA ---
+    # --- HERE GOES THE STORE DATA ---
     columns do
       column do
         panel "Inventory Levels" do
@@ -73,7 +72,7 @@ ActiveAdmin.register_page "Dashboard" do
       end
     end
 
-    # --- ROW 3: CLINIC DATA ---
+    # --- HERE THE CLINIC DATA ---
     columns do
       column do
         panel "Upcoming Appointments" do

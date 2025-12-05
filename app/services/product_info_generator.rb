@@ -9,7 +9,7 @@ class ProductInfoGenerator
 
     prompt = <<~PROMPT
       You are an expert audiologist. Provide technical specifications for the hearing aid: "#{@brand} #{@model}".
-      
+
       Return a valid JSON object with these exact keys:
       - max_gain: (Estimate Integer, e.g., 60, 80, 105)
       - battery_type: (One of: "Rechargeable", "312", "13", "675")
@@ -17,14 +17,14 @@ class ProductInfoGenerator
       - warranty: (String, e.g. "3 Years")
       - features: (String with bullet points of key features)
       - technical_specs: (String, a professional marketing description of 2-3 sentences)
-      
+
       If you are unsure, make a best educated guess based on the series tier.
     PROMPT
 
     response = client.chat(
       parameters: {
-        model: "gpt-4o",
-        messages: [{ role: "user", content: prompt }],
+        model: "gpt-4o", # We specify the vision model
+        messages: [ { role: "user", content: prompt } ],
         response_format: { type: "json_object" }
       }
     )

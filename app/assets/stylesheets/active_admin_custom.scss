@@ -3,12 +3,12 @@
 
 body.active_admin {
   font-family: 'Inter', sans-serif !important;
-  background-color: #f1f5f9 !important; /* Clean Gray Background */
+  background-color: #f1f5f9 !important;
 }
 
-/* --- 1. HEADER (Dark & Professional) --- */
+/* --- 1. HEADER --- */
 #header {
-  background: #1e293b !important; /* Dark Slate */
+  background: #1e293b !important;
   border-bottom: none;
   padding: 10px 15px;
 
@@ -32,7 +32,7 @@ body.active_admin {
   }
 
   ul.tabs > li.current > a {
-    background: #3b82f6 !important; /* Bright Blue Active State */
+    background: #3b82f6 !important;
     color: white !important;
   }
 
@@ -42,19 +42,19 @@ body.active_admin {
   }
 }
 
-/* --- 2. DASHBOARD PANELS (Clean & Tight) --- */
+/* --- 2. DASHBOARD PANELS  --- */
 .panel {
   background: white;
   border-radius: 8px;
   border: none !important;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Subtle shadow */
-  margin-bottom: 20px; /* Space between rows */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
 
   /* Panel Header */
   h3 {
     background: #ffffff !important;
     border-bottom: 1px solid #f1f5f9 !important;
-    color: #475569 !important; /* Slate Gray */
+    color: #475569 !important;
     font-size: 0.9rem !important;
     font-weight: 700;
     text-transform: uppercase;
@@ -63,9 +63,9 @@ body.active_admin {
     border-radius: 8px 8px 0 0;
   }
 
-  /* Panel Content (Where the data lives) */
+  /* Panel Content */
   .panel_contents {
-    padding: 15px 20px !important; /* Tighter padding */
+    padding: 15px 20px !important;
   }
 }
 
@@ -76,7 +76,7 @@ body.active_admin {
 }
 
 .kpi-value {
-  font-size: 3rem; /* Big, but not giant */
+  font-size: 3rem;
   font-weight: 800;
   line-height: 1.1;
   margin-bottom: 5px;

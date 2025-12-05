@@ -2,10 +2,10 @@ class Ability
   include CanCan::Ability
 
   def initialize(user)
-    user ||= User.new # Guest user (not logged in)
+    user ||= User.new
 
     if user.admin?
-      # Admins can do everything
+      # Admins have access to everything except audiograms and can edit/create/update or delete
       can :read, ActiveAdmin::Page, name: "Dashboard"
       can :manage, User
       can :manage, HearingAid
@@ -16,7 +16,7 @@ class Ability
       cannot :manage, Cart
 
     elsif user.audiologist?
-      # Audiologists can READ everything, but cannot edit/create/delete
+      # Audiologists can READ everything except the dashboard and cart, but they cannot edit/create or delete
 
       can :read, User
       can :read, HearingAid
@@ -26,7 +26,6 @@ class Ability
       can :manage, Recommendation
 
     else
-      # Patients can do nothing in the admin panel
     end
   end
 end

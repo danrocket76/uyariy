@@ -1,7 +1,7 @@
 ActiveAdmin.register Appointment do
   permit_params :user_id, :appointment_date, :status, :reason
 
-  # Scope to quickly see what needs attention
+  # a scope to see what needs attention
   scope :all
   scope :pending
   scope :confirmed
@@ -20,7 +20,7 @@ ActiveAdmin.register Appointment do
 
   form do |f|
     f.inputs do
-      f.input :user, input_html: { disabled: true } # Don't change the patient
+      f.input :user, input_html: { disabled: true }
       f.input :appointment_date, as: :datetime_picker
       f.input :reason
       f.input :status, as: :select, collection: Appointment.statuses.keys

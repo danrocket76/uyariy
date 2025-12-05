@@ -28,16 +28,13 @@ ActiveAdmin.register Recommendation do
   form do |f|
     f.inputs "Clinical Validation" do
       f.input :user, input_html: { disabled: true }
-      # Show which test this belongs to
+
       f.input :audiogram, as: :select, collection: Audiogram.where(user: f.object.user).map { |a| ["Test from #{a.created_at.strftime('%b %d')}", a.id] }, input_html: { disabled: true }
 
-      # 1. NEW: Status Dropdown (Includes 'Cochlear')
       f.input :status, as: :select, collection: Recommendation.statuses.keys.map { |k| [k.humanize, k] }, include_blank: false
 
-      # 2. NEW: Hint for the doctor
       li "Note: Select 'Cochlear' if the loss is too profound (95dB+). This hides the product list."
 
-      # 3. Product Selection (Optional if cochlear)
       f.input :hearing_aid, collection: HearingAid.all.map { |h| ["#{h.brand} - #{h.device_model} (Gain: #{h.max_gain}dB)", h.id] }
 
       f.input :audiologist_notes, label: "Clinical Message", placeholder: "e.g., Due to the profound nature of your hearing loss..."
@@ -51,7 +48,6 @@ ActiveAdmin.register Recommendation do
 
   controller do
     def update
-      # auto-stamp validation time if audiologist edits
       if current_user.audiologist?
         params[:recommendation][:validated_at] = Time.now
       end

@@ -1,6 +1,6 @@
 ActiveAdmin.register Order do
   menu priority: 4
-  actions :index, :show # Read-only history
+  actions :index, :show # Read-only
 
   index do
     selectable_column

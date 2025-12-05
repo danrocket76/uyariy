@@ -13,7 +13,7 @@ class AudiogramImageExtractor
 
     response = client.chat(
       parameters: {
-        model: "gpt-4o", # The vision model
+        model: "gpt-4o", # We specify the vision model
         messages: [
           {
             role: "user",
@@ -28,11 +28,11 @@ class AudiogramImageExtractor
             ]
           }
         ],
-        response_format: { type: "json_object" } # Critical: Forces valid JSON
+        response_format: { type: "json_object" } # We force it to obtain valid JSON
       }
     )
 
-    # Clean and parse the response
+    # This will clean and parse the response
     json_string = response.dig("choices", 0, "message", "content")
     JSON.parse(json_string)
   rescue StandardError => e

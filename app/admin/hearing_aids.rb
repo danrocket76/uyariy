@@ -1,12 +1,12 @@
 ActiveAdmin.register HearingAid do
-  # 1. PERMISSIONS & MENU
-  # Only Admins can manage inventory (Audiologists just view recommendations)
+  # PERMISSIONS & MENU
+  # Only Admins can manage inventory
   menu if: proc { current_user.admin? }
 
   permit_params :brand, :device_model, :price, :max_gain, :stock, :image_url, :battery_type, :bluetooth, :warranty, :technical_specs, :features
 
   # ------------------------------------------------
-  # 2. THE HIDDEN ACTION (Backend API for AI)
+  # (Backend API for AI)
   # ------------------------------------------------
   collection_action :auto_fill, method: :post do
     brand = params[:brand]
@@ -27,7 +27,7 @@ ActiveAdmin.register HearingAid do
   end
 
   # ------------------------------------------------
-  # 3. THE LIST VIEW (Index)
+  # THE LIST VIEW (The Index)
   # ------------------------------------------------
   index do
     selectable_column
@@ -45,7 +45,7 @@ ActiveAdmin.register HearingAid do
   end
 
   # ------------------------------------------------
-  # 4. THE FILTERS (Sidebar)
+  # THE FILTERS (The Sidebar)
   # ------------------------------------------------
   filter :brand
   filter :device_model
@@ -53,7 +53,7 @@ ActiveAdmin.register HearingAid do
   filter :price
 
   # ------------------------------------------------
-  # 5. THE FORM (With AI)
+  # THE FORM (AI Auto Fill)
   # ------------------------------------------------
   form do |f|
     f.semantic_errors
@@ -62,7 +62,7 @@ ActiveAdmin.register HearingAid do
       li do
         span "Enter Brand and Model below, then click this button to auto-complete the specs."
         br
-        # THE MAGIC BUTTON
+        # HERE GOES THE MAGIC OF THE AUTO FILL
         button "✨ Auto-Fill Specs with AI", id: "ai-autofill-btn", type: "button", class: "button", style: "background: #6f42c1; color: white; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer;"
         span " Loading...", id: "ai-loading", style: "display: none; color: #666; margin-left: 10px;"
       end
@@ -91,7 +91,7 @@ ActiveAdmin.register HearingAid do
     f.actions
 
     # ------------------------------------------------
-    # 6. THE JAVASCRIPT (Frontend Logic)
+    #  Frontend Logic with JS
     # ------------------------------------------------
     script do
       raw <<~JAVASCRIPT

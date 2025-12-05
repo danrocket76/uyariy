@@ -1,5 +1,5 @@
 ActiveAdmin.register Audiogram do
-  # Audiologists can READ and UPDATE (to validate), but not DELETE patient data
+  # Audiologists can READ and UPDATE (to validate), but they cant DELETE patient data
   menu if: proc {current_user.audiologist?}
 
   actions :all, except: [:destroy]
@@ -9,7 +9,6 @@ ActiveAdmin.register Audiogram do
   filter :user, label: "Patient"
   filter :created_at, label: "Date"
   filter :notes
-  # We filter by source using the text field 'image_file'
   filter :image_file, as: :string, label: "File Name (Source)"
 
 
@@ -27,19 +26,17 @@ ActiveAdmin.register Audiogram do
     end
   end
 
-  # 2. The Clinical Detail View (Analysis)
+  # 2. The Clinical Detail View (The Analysis)
   show do
     # 1. Basic Details Table
     attributes_table do
       row :user
       row :created_at
       row :notes
-      # Removed "Hearing Data (JSON)" - We have the graph now!
     end
 
-    # 2. Visual Audiogram (Resized)
+    # 2. Visual Audiogram
     panel "Clinical Analysis" do
-      # Container with max-width to prevent "Gigantic" chart
       div style: "max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" do
         canvas id: "adminAudiogramChart", height: "350"
       end
@@ -47,7 +44,6 @@ ActiveAdmin.register Audiogram do
       # Load Chart.js
       script src: "https://cdn.jsdelivr.net/npm/chart.js"
 
-      # The Script
       script do
         raw <<~JAVASCRIPT
           document.addEventListener("DOMContentLoaded", function() {
@@ -122,7 +118,7 @@ ActiveAdmin.register Audiogram do
       end
     end
 
-    # 3. Diagnosis Summary (Below Chart)
+    # 3. Diagnosis Summary
     panel "Diagnosis Summary" do
       analysis = AudiogramAnalyzer.new(audiogram).run
       div class: "attributes_table" do
@@ -144,11 +140,10 @@ ActiveAdmin.register Audiogram do
     end
   end
 
-  # 3. Custom Action: Generate Report (PDF-style)
+  # 3. Custom Action: Generate Report (PDF File)
   member_action :report, method: :get do
     @audiogram = resource
     @analysis = AudiogramAnalyzer.new(@audiogram).run
-    # Render a printable view layout
     render "admin/audiograms/report", layout: "active_admin"
   end
 end

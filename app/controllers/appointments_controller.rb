@@ -11,7 +11,7 @@ class AppointmentsController < ApplicationController
 
   def create
     @appointment = current_user.appointments.build(appointment_params)
-    @appointment.status = :pending # Default
+    @appointment.status = :pending #default mode
 
     if @appointment.save
       redirect_to appointments_path, notice: 'Appointment requested successfully. Waiting for confirmation.'

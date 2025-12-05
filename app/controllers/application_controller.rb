@@ -1,21 +1,18 @@
 class ApplicationController < ActionController::Base
-  # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
+
   allow_browser versions: :modern
 
-  # 1. PERMIT NAME FIELD (Fixes "Name can't be blank")
   before_action :configure_permitted_parameters, if: :devise_controller?
 
-  # 2. SET CART (Ensures shopping cart works on every page)
   before_action :set_cart
 
   # 3. ADMIN SECURITY (For ActiveAdmin)
   def authenticate_admin_user!
-    authenticate_user! # Ensure user is logged in via Devise
-
-    # Check Role: Only Admins and Audiologists allowed in the Panel
+    authenticate_user!
+    # Check Role: Only Admins and Audiologists are allowed in the Panel
     unless current_user.admin? || current_user.audiologist?
       flash[:alert] = "You are not authorized to access this area."
-      sign_out current_user # Force logout
+      sign_out current_user
       redirect_to new_user_session_path # Send back to login
     end
   end
@@ -35,7 +32,7 @@ class ApplicationController < ActionController::Base
 
   protected
 
-  # Logic to whitelist ':name' for Sign Up and Update
+
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
     devise_parameter_sanitizer.permit(:account_update, keys: [:name])

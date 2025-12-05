@@ -75,12 +75,9 @@
     <div class="col-lg-6">
 
       <%
-        # --- LOGIC GATES ---
         is_normal_left = @analysis[:left_ear][:severity] == "Normal"
         is_normal_right = @analysis[:right_ear][:severity] == "Normal"
         max_loss = [@analysis[:left_ear][:max_loss], @analysis[:right_ear][:max_loss]].max
-
-        # Find the specific recommendation linked to THIS audiogram
         validation = @audiogram.recommendations.first
       %>
 
@@ -100,7 +97,7 @@
               <h3 class="text-success fw-bold mt-3">Your hearing is perfect!</h3>
               <p class="lead text-muted mt-2">You lucky m*therf*cker! You don't need hearing aids.</p>
               <p class="small text-muted">Go enjoy some music (but not too loud, or you'll end up back here!).</p>
-              <img src="https://media.giphy.com/media/l41lUjUgLLwWrz20w/giphy.gif" alt="Happy Dance" class="img-fluid rounded shadow mt-3" style="max-height: 200px;">
+              <img src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3YXR6b2dvamtxdnQ5bHNxMXlzdnJienpodHZ6Znp5eTBucGNhOHN2ZSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/H85LpFTwMZPoc/giphy.gif" alt="Hell Yeah" class="img-fluid rounded shadow mt-3" style="max-height: 200px;">
             </div>
 
           <% elsif validation&.cochlear? %>
@@ -230,7 +227,7 @@
         const ctx = document.getElementById('audiogramChart');
 
         if (ctx) {
-            // Data Injection from Rails
+            // Here is the data injection from Rails
             const leftData = [
                 <%= @audiogram.thresholds.dig("left", "125") || 0 %>,
                 <%= @audiogram.thresholds.dig("left", "250") || 0 %>,
@@ -251,7 +248,7 @@
                 <%= @audiogram.thresholds.dig("right", "8000") || 0 %>
             ];
 
-            // Avoid duplication bug
+            // To Avoid duplication bug
             if (Chart.getChart("audiogramChart")) {
                 Chart.getChart("audiogramChart").destroy();
             }
@@ -290,7 +287,7 @@
                     maintainAspectRatio: false,
                     scales: {
                         y: {
-                            reverse: true, // Medical Standard
+                            reverse: true, // Compliance with Medical Standard
                             min: -10,
                             max: 120,
                             title: {

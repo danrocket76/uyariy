@@ -99,7 +99,7 @@
           <div class="d-grid">
 
             <%
-              # Check if User already bought this
+              # This will check if User already bought this
               already_bought = Recommendation.where(user: current_user, hearing_aid: @hearing_aid, status: :purchased).exists?
             %>
 

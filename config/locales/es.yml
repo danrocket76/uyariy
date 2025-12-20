@@ -1,0 +1,46 @@
+es:
+  app_name: "UYARIY"
+
+  # Navbar
+  navbar:
+    store: "Tienda"
+    history: "Mi Historial"
+    appointments: "Citas"
+    dashboard: "Panel de Control"
+    clinic_panel: "Panel Clínico"
+    login: "Iniciar Sesión"
+    signup: "Registrarse"
+    logout: "Cerrar Sesión"
+    cart: "Carrito"
+
+  # Homepage
+  home:
+    hero_title: "Redescubre la Alegría de Escuchar"
+    hero_subtitle: "Evaluaciones auditivas de grado clínico y dispositivos premium, entregados directamente a tu puerta. Validados por audioprotesistas y audiólogos certificados"
+    cta_primary: "Iniciar Test Auditivo"
+    cta_secondary: "Ver Audífonos"
+    features:
+      ai: "Análisis Inteligente"
+      doctor: "Validado por Doctores"
+      delivery: "Envío Directo"
+
+  # Common Actions
+  actions:
+    back: "Volver"
+    view_details: "Ver Detalles"
+    add_to_cart: "Añadir al Carrito"
+    purchased: "Comprado"
+    owned: "Adquirido"
+    submit: "Enviar"
+    save: "Guardar"
+
+  # Roles
+  roles:
+    patient: "Paciente"
+    audiologist: "Audiólogo"
+    admin: "Administrador"
+
+  # Active Admin (Simple overrides)
+  active_admin:
+    dashboard: "Panel Principal"
+    dashboard_welcome: "Bienvenido al Panel de UYARIY"

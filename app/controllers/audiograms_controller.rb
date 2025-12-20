@@ -1,22 +1,39 @@
 class AudiogramsController < ApplicationController
   # Security: Only patients allowed (Admins go to Dashboard)
   before_action :authenticate_patient!
-
+  before_action :set_audiogram, only: [:show, :destroy]
   def index
     @audiograms = current_user.audiograms.order(created_at: :desc)
   end
 
   def show
-    @audiogram = Audiogram.find(params[:id])
+    #@audiogram = Audiogram.find(params[:id])
     @analysis = AudiogramAnalyzer.new(@audiogram).run
 
+    left_max = @analysis[:left_ear][:max_loss]
+    right_max = @analysis[:right_ear][:max_loss]
+    max_loss = [left_max, right_max].max
+
+    @clinical_recommendations = @audiogram.recommendations.includes(:hearing_aid)
+
+    if max_loss >= 90
+      @math_recommendations = []
+    else
+      @math_recommendations = HearingAid.where("max_gain >= ? AND stock >0", max_loss)
+                                        .order(max_gain: :asc)
+                                        .limit(3)
+      if @math_recommendations.empty?
+        @math_recommendations = HearingAid.where("stock > 0").order(max_gain: :desc).limit(3)
+      end
+    end
+  end
     # 1. Math: Find all devices that can be a potential match and powerful enough for the loss
-    max_loss_val = [@analysis[:left_ear][:max_loss], @analysis[:right_ear][:max_loss]].max
-    @math_recommendations = HearingAid.where("max_gain >= ?", max_loss_val)
+    #max_loss_val = [@analysis[:left_ear][:max_loss], @analysis[:right_ear][:max_loss]].max
+    #@math_recommendations = HearingAid.where("max_gain >= ?", max_loss_val)
 
     # 2. Clinical: Find actual DB records created/validated by the system or doctor
-    @clinical_recommendations = Recommendation.where(user: current_user, hearing_aid: @math_recommendations)
-  end
+  #@clinical_recommendations = Recommendation.where(user: current_user, hearing_aid: @math_recommendations)
+  #end
 
   def new
     @audiogram = Audiogram.new
@@ -43,7 +60,7 @@ class AudiogramsController < ApplicationController
           render :new, status: :unprocessable_entity
         end
       else
-        flash.now[:alert] = "AI could not read image. Please try again."
+        flash.now[:alert] = "AI could not read image. Please try a clearer photo or manual input."
         render :new, status: :unprocessable_entity
       end
 
@@ -66,33 +83,71 @@ class AudiogramsController < ApplicationController
   end
 
   def destroy
-    @audiogram = current_user.audiograms.find(params[:id])
+    #@audiogram = current_user.audiograms.find(params[:id])
     @audiogram.destroy
     redirect_to audiograms_path, notice: "Assessment deleted successfully."
   end
 
   private
+  def set_audiogram
+    @audiogram = current_user.audiograms.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to audiogram_path, alert: "Audiogram not found"
+  end
 
   # CREATES A DRAFT OF THE RECOMMENDATION FOR THE AUDIOLOGIST
   def auto_generate_recommendation(audiogram)
+    # 1. Calculate the patient's worst hearing loss (Max Decibels)
+    # We look at both ears and find the highest number
+    left_vals = audiogram.thresholds.dig('left').values.map(&:to_i)
+    right_vals = audiogram.thresholds.dig('right').values.map(&:to_i)
 
-    analysis = AudiogramAnalyzer.new(audiogram).run
-    max_loss = [analysis[:left_ear][:max_loss], analysis[:right_ear][:max_loss]].max
+    #left_max = audiogram.thresholds.dig("left").values.map(&:to_i).max || 0
+    #right_max = audiogram.thresholds.dig("right").values.map(&:to_i).max || 0
 
-    # It will skip if the hearing is normal (We don't need to waste doctor's time)
-    return if max_loss < 25
+    left_max = left_vals.any? ? left_vals.max : 0
+    right_max = right_vals.any? ? right_vals.max : 0
+    max_loss = [left_max, right_max].max
 
-    # Find the "Best Fit" (Highest price/quality that covers the loss) and also the default suggestion the doctor will see
-    best_match = HearingAid.where("max_gain >= ?", max_loss).order(price: :desc).first
-
-    if best_match
-      # Create the PENDING record
+    # 2. Logic Gate: Is it Profound Loss? (> 90dB)
+    # If yes, we don't recommend a standard hearing aid. We flag for Cochlear.
+    if max_loss >= 90
       Recommendation.create!(
         user: current_user,
-        audiogram_id: audiogram.id,
+        audiogram: audiogram,
+        status: :pending,
+        hearing_aid: nil, # No specific device
+        audiologist_notes: "System Alert: Profound loss detected (#{max_loss}dB). Cochlear Implant evaluation recommended."
+      )
+      return
+    end
+
+    # 3. SMART QUERY (The Fix)
+    # Find devices that cover the loss ("max_gain >= max_loss")
+    # AND sort by 'max_gain ASC' to pick the closest fit, not the most powerful one.
+    best_match = HearingAid.where("max_gain >= ? AND stock > 0", max_loss)
+                           .order(max_gain: :asc)
+                           .first
+
+    # 4. Fallback: If no perfect match, just get the most powerful one we have
+    best_match ||= HearingAid.where("stock > 0").order(max_gain: :desc).first
+
+    # 5. Create the Recommendation
+    if best_match
+      Recommendation.create!(
+        user: current_user,
+        audiogram: audiogram,
         hearing_aid: best_match,
         status: :pending,
-        notes: "System Auto-Selection based on #{max_loss}dB loss."
+        notes: "System Auto-Selection based on #{max_loss}dB loss. Matched with #{best_match.device_model} (Gain: #{best_match.max_gain}dB)."
+      )
+    else
+      # Edge case: Empty Inventory
+      Recommendation.create!(
+        user: current_user,
+        audiogram: audiogram,
+        status: :pending,
+        notes: "System Alert: No suitable inventory found for #{max_loss}dB loss."
       )
     end
   end

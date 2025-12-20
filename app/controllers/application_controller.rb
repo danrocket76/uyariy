@@ -2,6 +2,8 @@ class ApplicationController < ActionController::Base
 
   allow_browser versions: :modern
 
+  before_action :set_locale
+
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   before_action :set_cart
@@ -60,6 +62,14 @@ class ApplicationController < ActionController::Base
       @cart = Cart.create
       session[:cart_id] = @cart.id
     end
+  end
+
+  def set_locale
+    I18n.locale = params[:lang] || I18n.default_locale
+  end
+
+  def default_url_options
+    { lang: I18n.locale }
   end
 
 end

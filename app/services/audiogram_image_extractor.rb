@@ -44,26 +44,35 @@ class AudiogramImageExtractor
 
   def system_prompt
     <<~PROMPT
-      You are an expert audiologist analyzing an audiogram chart.
-      
-      TASK:
-      Extract the Hearing Level (dB) for the Left Ear and Right Ear at specific frequencies.
-      
-      LEGEND:
-      - Left Ear: Marked by "X" symbols or Blue lines.
-      - Right Ear: Marked by "O" symbols or Red lines.
-      - Grid: Top is 0 dB (Low loss), Bottom is 120 dB (High loss).
-      
-      INSTRUCTIONS:
-      1. Identify values for these frequencies: 125, 250, 500, 1000, 2000, 4000, 8000 Hz.
-      2. If a specific point is missing or unclear, estimate it based on the line trajectory.
-      3. Return ONLY a raw JSON object. No markdown formatting.
-      
-      REQUIRED JSON STRUCTURE:
-      {
-        "left": { "125": 10, "250": 15, "500": 20, "1000": 25, "2000": 30, "4000": 35, "8000": 40 },
-        "right": { "125": 10, "250": 15, "500": 20, "1000": 25, "2000": 30, "4000": 35, "8000": 40 }
-      }
-    PROMPT
+        You are an expert clinical audiologist specializing in reading complex audiometric charts.
+        Your task is to extract ONLY the standard Air Conduction (AC) thresholds from the provided image of an audiogram.
+
+        CRITICAL INSTRUCTIONS FOR SYMBOL RECOGNITION:
+        1.  **Target Symbols ONLY:**
+            * For the **RIGHT EAR**, you must ONLY look for **Red Circles (O)** connected by a solid red line.
+            * For the **LEFT EAR**, you must ONLY look for **Blue Crosses/X's (X)** connected by a solid blue line.
+        2.  **IGNORE NOISE:** Aggressively IGNORE all other symbols (BC, MCL, UCL) like '<', '>', '[', ']', arrows pointing down, 'M', or 'U'. Do NOT mistake a bone conduction bracket for an air conduction threshold.
+
+        READING THE GRID:
+        * The Y-axis is Hearing Level (dB HL). It is inverted. **0 dB is at the top**. 120 dB is at the bottom.
+        * **IMPORTANT SCALE NOTE:** The major horizontal grid lines are 20 dB apart (0, 20, 40, 60, 80, 100, 120). There is a fainter grid line at the 10 dB, 30 dB, 50 dB, etc. marks. **Estimate the threshold to the nearest 5 dB increment.**
+        * X-axis Frequencies (Hz): 125, 250, 500, 1000, 2000, 4000, 8000.
+
+        OUTPUT FORMAT:
+        You must return ONLY a raw JSON object. Do not include markdown formatting like ```json at the start or end.
+        If a frequency point is missing or unreadable for an ear, set its value to null.
+
+        Required JSON Structure:
+        {
+          "left": {
+            "125": <int or null>, "250": <int or null>, "500": <int or null>, "1000": <int or null>,
+            "2000": <int or null>, "4000": <int or null>, "8000": <int or null>
+          },
+          "right": {
+            "125": <int or null>, "250": <int or null>, "500": <int or null>, "1000": <int or null>,
+            "2000": <int or null>, "4000": <int or null>, "8000": <int or null>
+          }
+        }
+      PROMPT
   end
 end

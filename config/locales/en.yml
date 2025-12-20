@@ -1,31 +1,46 @@
-# Files in the config/locales directory are used for internationalization and
-# are automatically loaded by Rails. If you want to use locales other than
-# English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t "hello"
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t("hello") %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more about the API, please read the Rails Internationalization guide
-# at https://guides.rubyonrails.org/i18n.html.
-#
-# Be aware that YAML interprets the following case-insensitive strings as
-# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
-# must be quoted to be interpreted as strings. For example:
-#
-#     en:
-#       "yes": yup
-#       enabled: "ON"
-
 en:
-  hello: "Hello world"
+  app_name: "UYARIY"
+  
+  # Navbar
+  navbar:
+    store: "Store"
+    history: "My History"
+    appointments: "Appointments"
+    dashboard: "Dashboard"
+    clinic_panel: "Clinic Panel"
+    login: "Login"
+    signup: "Sign Up"
+    logout: "Logout"
+    cart: "Cart"
+
+  # Homepage
+  home:
+    hero_title: "Rediscover the Joy of Hearing"
+    hero_subtitle: "Clinical-grade hearing assessments and premium devices, delivered directly to your door. Validated by certified audiologists."
+    cta_primary: "Start Hearing Test"
+    cta_secondary: "Shop Hearing Aids"
+    features:
+      ai: "Smart Analysis"
+      doctor: "Doctor Validated"
+      delivery: "Direct Delivery"
+  
+  # Common Actions
+  actions:
+    back: "Back"
+    view_details: "View Details"
+    add_to_cart: "Add to Cart"
+    purchased: "Purchased"
+    owned: "Owned"
+    submit: "Submit"
+    save: "Save"
+  
+  # Roles
+  roles:
+    patient: "Patient"
+    audiologist: "Audiologist"
+    admin: "Admin"
+
+  # Active Admin
+  active_admin:
+    dashboard: "Dashboard"
+    dashboard_welcome: "Welcome to UYARIY Admin"

@@ -76,3 +76,5 @@ gem 'sprockets-rails'
 gem 'ruby-openai'
 
 gem 'stripe'
+
+gem 'rails-i18n'

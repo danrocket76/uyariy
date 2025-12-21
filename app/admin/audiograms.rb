@@ -120,7 +120,7 @@ ActiveAdmin.register Audiogram do
 
     # 3. Diagnosis Summary
     panel "Diagnosis Summary" do
-      analysis = AudiogramAnalyzer.new(audiogram).run
+      analysis = AudiogramAnalyzer.new(audiogram).analyze
       div class: "attributes_table" do
         table do
           tr do

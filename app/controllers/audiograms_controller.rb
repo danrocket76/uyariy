@@ -7,14 +7,10 @@ class AudiogramsController < ApplicationController
   end
 
   def show
-    # Aquí mantenemos la lógica de visualización que ya tenías
+
     @analysis = AudiogramAnalyzer.new(@audiogram).analyze
 
-    # ... (El resto de tu código de lógica de visualización show se mantiene igual) ...
-    # Nota: No borres la lógica del show que hicimos antes para la vista, esa está bien ahí.
-    # Solo simplificaremos el CREATE.
 
-    # [Mantén aquí el bloque de código de @math_recommendations que te di en la respuesta anterior]
     left_max = @analysis[:left_ear][:max_loss]
     right_max = @analysis[:right_ear][:max_loss]
     max_loss = [left_max, right_max].max
@@ -45,15 +41,12 @@ class AudiogramsController < ApplicationController
   end
 
   def create
-    # IMPLEMENTACIÓN DE PATRONES:
-    # Usamos la FACHADA para manejar la complejidad de creación
     @facade = AudiogramRegistrationFacade.new(current_user, params[:audiogram])
 
     if @facade.register
-      #sitodo sale bien la fachada ya creo el audiograma y llamo a la FACTORY para la recomendacion
       redirect_to @facade.audiogram, notice: 'Assessment processing complete.', status: :see_other
     else
-      # Si falló, recuperamos el objeto audiograma de la fachada para mostrar errores
+
       @audiogram = @facade.audiogram || Audiogram.new
       flash.now[:alert] = @audiogram.errors.full_messages.to_sentence
       render :new, status: :unprocessable_entity
@@ -73,5 +66,4 @@ class AudiogramsController < ApplicationController
     redirect_to audiograms_path, alert: "Audiogram not found."
   end
 
-  # Borramos el metodo 'auto_generate_recommendation' porque ahora vive en la FACTORY.
 end

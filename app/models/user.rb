@@ -4,15 +4,12 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+  include PatientFunctionality
+
   # 1. We Define Roles
   enum :role, { patient: 0, audiologist: 1, admin: 2 }
 
-  # 2. The Associations
-  has_many :recommendations, dependent: :destroy
-
-  has_many :audiograms, dependent: :destroy
-
-  has_many :appointments, dependent: :destroy
+  # 2. Associations (moved to patient_functionality with ISP)
 
   # 3. Validation
   validates :name, presence: true

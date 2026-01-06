@@ -12,8 +12,6 @@ admin.assign_attributes(
   password_confirmation: 'SASadmin25*'
 )
 
-admin.confirmed_at = Time.current
-
 admin.save!
 
 puts "✅ Admin user ready: admin@example.com"

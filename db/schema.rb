@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_21_020829) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_14_042124) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -30,11 +30,15 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_21_020829) do
 
   create_table "appointments", force: :cascade do |t|
     t.datetime "appointment_date"
+    t.bigint "audiogram_id"
     t.datetime "created_at", null: false
+    t.bigint "hearing_aid_id"
     t.text "reason"
     t.integer "status"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["audiogram_id"], name: "index_appointments_on_audiogram_id"
+    t.index ["hearing_aid_id"], name: "index_appointments_on_hearing_aid_id"
     t.index ["user_id"], name: "index_appointments_on_user_id"
   end
 
@@ -118,6 +122,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_21_020829) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "appointments", "audiograms"
+  add_foreign_key "appointments", "hearing_aids"
   add_foreign_key "appointments", "users"
   add_foreign_key "audiograms", "users"
   add_foreign_key "order_items", "carts"

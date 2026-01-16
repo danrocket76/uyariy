@@ -78,3 +78,12 @@ gem 'ruby-openai'
 gem 'stripe'
 
 gem 'rails-i18n'
+
+#API & Auth
+gem 'rack-cors'
+gem 'devise-jwt'
+
+#Data
+gem 'graphql'
+
+gem "graphiql-rails", group: :development

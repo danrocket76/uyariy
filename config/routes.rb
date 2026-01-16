@@ -1,6 +1,16 @@
 Rails.application.routes.draw do
+  if Rails.env.development?
+    mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/graphql"
+  end
+  post "/graphql", to: "graphql#execute"
   get "pages/home"
-  devise_for :users, controllers: {registrations: "registrations"}
+  devise_for :users, path: '',
+             path_names: {
+               sign_in: 'api/v1/login',
+               sign_out: 'api/v1/logout',
+               registration: 'api/v1/signup'
+             },
+             controllers: {sessions: "api/v1/sessions", registrations: "api/v1/registrations"}
   ActiveAdmin.routes(self)
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -30,4 +40,7 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+
+
+
 end

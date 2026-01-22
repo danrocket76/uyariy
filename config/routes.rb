@@ -1,46 +1,46 @@
 Rails.application.routes.draw do
+  # --- 1. API (Para tu Next.js Frontend) ---
+  # Aquí vive toda la lógica del paciente
+  namespace :api, defaults: { format: :json } do
+    namespace :v1 do
+      devise_scope :user do
+        post 'login', to: 'sessions#create'
+        delete 'logout', to: 'sessions#destroy'
+        post 'signup', to: 'registrations#create'
+      end
+      # Tu ruta de IA
+      post 'analyze_audiogram', to: 'ai_diagnostic#analyze'
+    end
+  end
+
+  # --- 2. GRAPHQL ---
   if Rails.env.development?
     mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/graphql"
   end
   post "/graphql", to: "graphql#execute"
-  get "pages/home"
-  devise_for :users, path: '',
-             path_names: {
-               sign_in: 'api/v1/login',
-               sign_out: 'api/v1/logout',
-               registration: 'api/v1/signup'
-             },
-             controllers: {sessions: "api/v1/sessions", registrations: "api/v1/registrations"}
+
+  # --- 3. FRONTEND CLÁSICO (HTML / Admin) ---
+  # Esto arregla el login del doctor (vuelve a ser normal)
+  devise_for :users
   ActiveAdmin.routes(self)
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  root to: "pages#home"
-
+  # Rutas de tus recursos existentes (Audiogramas, Citas, etc.)
   resources :audiograms
-
   resources :hearing_aids, only: [:index, :show]
-
   resources :carts, only: [:show]
-
   resources :order_items, only: [:create, :destroy]
-
   resources :checkouts, only: [:create]
   get 'checkout/success', to: 'checkouts#success'
-
   resources :appointments, only: [:index, :new, :create]
 
-
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  # Health check
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  # --- 4. LA RAÍZ DEL PROBLEMA (Solucionada) ---
+  # Eliminé "home#index" que no existe.
+  # Volvemos a tu página original que SI funcionaba:
+  root to: "pages#home"
 
-  # Defines the root path route ("/")
-  # root "posts#index"
-
-
-
+  # Si no tienes PagesController, usa el dashboard de admin como home:
+  # root to: "admin/dashboard#index"
 end

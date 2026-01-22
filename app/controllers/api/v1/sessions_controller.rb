@@ -10,7 +10,7 @@ class Api::V1::SessionsController < Devise::SessionsController
       user: {
         id: resource.id,
         email: resource.email,
-        # IMPORTANTE: Enviamos el rol para redirigir en el frontend
+
         role: resource.role || 'patient'
       },
       token: request.env['warden-jwt_auth.token']
